@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import '../bin/interpreter/interpreter.dart';
+import 'package:string_interpreter/interpreter/interpreter.dart';
 
 void main() {
   test('initialTest', () {
