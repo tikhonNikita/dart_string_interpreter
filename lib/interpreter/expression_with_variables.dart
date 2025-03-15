@@ -4,20 +4,20 @@ class ExpressionWithVariables implements Expression {
   final String _input;
   Map<String, num> _variables;
 
-  int _pos = 0;
+  int _currentPosition = 0;
   String? _currentChar;
 
-  final _numberRegex = RegExp(r'[0-9.]');
-  final _variableStartRegex = RegExp(r'[a-zA-Z]');
-  final _variableRegex = RegExp(r'[a-zA-Z0-9_]');
+  static final _numberRegex = RegExp(r'[0-9.]');
+  static final _variableStartRegex = RegExp(r'[a-zA-Z]');
+  static final _variableRegex = RegExp(r'[a-zA-Z0-9_]');
 
   ExpressionWithVariables(this._input) : _variables = {} {
     _currentChar = _input.isNotEmpty ? _input[0] : null;
   }
 
   void _nextChar() {
-    _pos++;
-    _currentChar = (_pos < _input.length) ? _input[_pos] : null;
+    _currentPosition++;
+    _currentChar = (_currentPosition < _input.length) ? _input[_currentPosition] : null;
   }
 
   void skipWhitespace() {
@@ -31,12 +31,12 @@ class ExpressionWithVariables implements Expression {
       return null;
     }
 
-    final start = _pos;
+    final start = _currentPosition;
     while (_currentChar != null && _variableRegex.hasMatch(_currentChar!)) {
       _nextChar();
     }
 
-    final varName = _input.substring(start, _pos);
+    final varName = _input.substring(start, _currentPosition);
     if (!_variables.containsKey(varName)) {
       throw Exception('Unknown variable "$varName"');
     }
@@ -45,7 +45,7 @@ class ExpressionWithVariables implements Expression {
 
   double _parseNumber() {
     skipWhitespace();
-    final start = _pos;
+    final start = _currentPosition;
 
     final variableValue = _tryParseVariable();
     if (variableValue != null) {
@@ -55,7 +55,7 @@ class ExpressionWithVariables implements Expression {
     while (_currentChar != null && (_numberRegex.hasMatch(_currentChar!))) {
       _nextChar();
     }
-    final numberStr = _input.substring(start, _pos);
+    final numberStr = _input.substring(start, _currentPosition);
     return double.parse(numberStr);
   }
 
@@ -116,8 +116,8 @@ class ExpressionWithVariables implements Expression {
   }
 
   void _prepareForReevaluation(Map<String, num> variables) {
-    _pos = 0;
-    _currentChar = _input.isNotEmpty ? _input[_pos] : null;
+    _currentPosition = 0;
+    _currentChar = _input.isNotEmpty ? _input[_currentPosition] : null;
     _variables = variables;
   }
 
