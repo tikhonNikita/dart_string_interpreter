@@ -1,6 +1,8 @@
-class Parser {
+import 'expression.dart';
+
+class ExpressionWithVariables implements Expression {
   final String _input;
-  final Map<String, num> _variables;
+  Map<String, num> _variables;
 
   int _pos = 0;
   String? _currentChar;
@@ -9,7 +11,7 @@ class Parser {
   final _variableStartRegex = RegExp(r'[a-zA-Z]');
   final _variableRegex = RegExp(r'[a-zA-Z0-9_]');
 
-  Parser(this._input, this._variables) {
+  ExpressionWithVariables(this._input) : _variables = {} {
     _currentChar = _input.isNotEmpty ? _input[0] : null;
   }
 
@@ -113,12 +115,24 @@ class Parser {
     return result;
   }
 
-  double parse() {
+  void _prepareForReevaluation(Map<String, num> variables) {
+    _pos = 0;
+    _currentChar = _input.isNotEmpty ? _input[_pos] : null;
+    _variables = variables;
+  }
+
+  @override
+  double evaluate([Map<String, num>? variables]) {
+    final newVariables = variables ?? {};
+    _prepareForReevaluation(newVariables);
+
     final result = _parseExpression();
     skipWhitespace();
+
     if (_currentChar != null) {
       throw Exception('Error: unexpected character "$_currentChar"');
     }
+
     return result;
   }
 }

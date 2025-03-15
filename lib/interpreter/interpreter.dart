@@ -1,5 +1,10 @@
+import 'expression.dart';
+
 class Interpreter {
-  String interpret(String phrase) {
-    return phrase;
+  final Expression _expression;
+  Interpreter(this._expression);
+
+  double interpret([Map<String, num>? variables]) {
+    return _expression.evaluate(variables);
   }
 }
